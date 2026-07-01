@@ -1,0 +1,267 @@
+-- hunter's pvp script (keybind fixed v3)
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local LocalPlayer = Players.LocalPlayer
+
+-- GUI Parent
+local function getGuiParent()
+    if typeof(gethui) == "function" then return gethui() end
+    return LocalPlayer:WaitForChild("PlayerGui")
+end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "HunterPvpScript"
+gui.ResetOnSpawn = false
+gui.DisplayOrder = 999
+gui.Parent = getGuiParent()
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 280, 0, 300)
+frame.Position = UDim2.new(0.5, -140, 0, 80)
+frame.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+
+local fs = Instance.new("UIStroke", frame)
+fs.Color = Color3.fromRGB(28, 28, 28)
+fs.Thickness = 1
+
+-- Title Bar
+local bar = Instance.new("Frame")
+bar.Size = UDim2.new(1, 0, 0, 32)
+bar.BackgroundColor3 = Color3.fromRGB(13, 13, 13)
+bar.BorderSizePixel = 0
+bar.Parent = frame
+
+local titleLbl = Instance.new("TextLabel")
+titleLbl.Size = UDim2.new(1, -70, 1, 0)
+titleLbl.Position = UDim2.new(0, 12, 0, 0)
+titleLbl.BackgroundTransparency = 1
+titleLbl.TextColor3 = Color3.fromRGB(200, 200, 200)
+titleLbl.Font = Enum.Font.Gotham
+titleLbl.TextSize = 13
+titleLbl.Text = "hunter's pvp script"
+titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+titleLbl.Parent = bar
+
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Size = UDim2.new(0, 20, 0, 20)
+minimizeBtn.Position = UDim2.new(1, -50, 0.5, -10)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+minimizeBtn.Text = "−"
+minimizeBtn.TextColor3 = Color3.fromRGB(100, 100, 100)
+minimizeBtn.Font = Enum.Font.Gotham
+minimizeBtn.TextSize = 14
+minimizeBtn.BorderSizePixel = 0
+minimizeBtn.Parent = bar
+Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 4)
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 20, 0, 20)
+closeBtn.Position = UDim2.new(1, -27, 0.5, -10)
+closeBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+closeBtn.Text = "x"
+closeBtn.TextColor3 = Color3.fromRGB(100, 100, 100)
+closeBtn.Font = Enum.Font.Gotham
+closeBtn.TextSize = 11
+closeBtn.BorderSizePixel = 0
+closeBtn.Parent = bar
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
+
+local content = Instance.new("Frame")
+content.Size = UDim2.new(1, 0, 1, -32)
+content.Position = UDim2.new(0, 0, 0, 32)
+content.BackgroundTransparency = 1
+content.Parent = frame
+
+-- Toggle
+local dashToggle = Instance.new("TextButton")
+dashToggle.Size = UDim2.new(1, -22, 0, 36)
+dashToggle.Position = UDim2.new(0, 11, 0, 20)
+dashToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+dashToggle.Text = "ENABLE LONG DASH"
+dashToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+dashToggle.Font = Enum.Font.Gotham
+dashToggle.TextSize = 14
+dashToggle.Parent = content
+Instance.new("UICorner", dashToggle).CornerRadius = UDim.new(0, 6)
+
+-- Strength
+local strengthLabel = Instance.new("TextLabel")
+strengthLabel.Size = UDim2.new(1, -22, 0, 20)
+strengthLabel.Position = UDim2.new(0, 11, 0, 70)
+strengthLabel.BackgroundTransparency = 1
+strengthLabel.Text = "dash length"
+strengthLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
+strengthLabel.Font = Enum.Font.Gotham
+strengthLabel.TextSize = 12
+strengthLabel.Parent = content
+
+local strengthBox = Instance.new("TextBox")
+strengthBox.Size = UDim2.new(1, -22, 0, 36)
+strengthBox.Position = UDim2.new(0, 11, 0, 95)
+strengthBox.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+strengthBox.Text = "85"
+strengthBox.TextColor3 = Color3.fromRGB(210, 210, 210)
+strengthBox.Font = Enum.Font.GothamBold
+strengthBox.TextSize = 16
+strengthBox.Parent = content
+Instance.new("UICorner", strengthBox).CornerRadius = UDim.new(0, 6)
+
+-- Unbreakable
+local unbreakableToggle = Instance.new("TextButton")
+unbreakableToggle.Size = UDim2.new(1, -22, 0, 36)
+unbreakableToggle.Position = UDim2.new(0, 11, 0, 145)
+unbreakableToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+unbreakableToggle.Text = "ENABLE UNBREAKABLE"
+unbreakableToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+unbreakableToggle.Font = Enum.Font.Gotham
+unbreakableToggle.TextSize = 14
+unbreakableToggle.Parent = content
+Instance.new("UICorner", unbreakableToggle).CornerRadius = UDim.new(0, 6)
+
+-- Keybind
+local keybindLabel = Instance.new("TextLabel")
+keybindLabel.Size = UDim2.new(1, -22, 0, 40)
+keybindLabel.Position = UDim2.new(0, 11, 0, 195)
+keybindLabel.BackgroundTransparency = 1
+keybindLabel.Text = "toggle gui visibility bind: unbound"
+keybindLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
+keybindLabel.Font = Enum.Font.Gotham
+keybindLabel.TextSize = 12
+keybindLabel.TextWrapped = true
+keybindLabel.Parent = content
+
+local currentBind = nil
+local rebinding = false
+local unbreakableEnabled = false
+
+keybindLabel.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        rebinding = true
+        keybindLabel.Text = "toggle gui visibility bind: press any key..."
+        task.delay(0.1, function() rebinding = true end) -- small delay
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+
+    if rebinding then
+        if input.KeyCode == Enum.KeyCode.Backspace then
+            currentBind = nil
+            keybindLabel.Text = "toggle gui visibility bind: unbound"
+        else
+            currentBind = input.KeyCode
+            local keyName = tostring(input.KeyCode):gsub("Enum.KeyCode.", "")
+            keybindLabel.Text = "toggle gui visibility bind: " .. keyName
+        end
+        rebinding = false
+        return
+    end
+
+    if currentBind and input.KeyCode == currentBind then
+        gui.Enabled = not gui.Enabled
+    end
+end)
+
+-- Dash logic
+local enabled = false
+local dashLength = 85
+local dashConnection = nil
+
+dashToggle.MouseButton1Click:Connect(function()
+    enabled = not enabled
+    if enabled then
+        dashToggle.Text = "DISABLE LONG DASH"
+        dashToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        dashConnection = task.spawn(function()
+            while enabled do
+                task.wait(0.15)
+                local character = LocalPlayer.Character
+                if character then
+                    character:SetAttribute("DashLength", dashLength)
+                    character:SetAttribute("DashLengthAir", dashLength)
+                end
+            end
+        end)
+    else
+        dashToggle.Text = "ENABLE LONG DASH"
+        dashToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+        if dashConnection then task.cancel(dashConnection) end
+    end
+end)
+
+strengthBox.FocusLost:Connect(function()
+    local num = tonumber(strengthBox.Text)
+    if num then dashLength = math.clamp(num, 1, 500) end
+    strengthBox.Text = tostring(dashLength)
+end)
+
+-- Unbreakable
+unbreakableToggle.MouseButton1Click:Connect(function()
+    unbreakableEnabled = not unbreakableEnabled
+    if unbreakableEnabled then
+        unbreakableToggle.Text = "DISABLE UNBREAKABLE"
+        unbreakableToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        if LocalPlayer.Character then
+            LocalPlayer.Character:SetAttribute("Unbreakable", true)
+            LocalPlayer.Character:SetAttribute("UnbreakableAll", true)
+        end
+    else
+        unbreakableToggle.Text = "ENABLE UNBREAKABLE"
+        unbreakableToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+        if LocalPlayer.Character then
+            LocalPlayer.Character:SetAttribute("Unbreakable", false)
+            LocalPlayer.Character:SetAttribute("UnbreakableAll", false)
+        end
+    end
+end)
+
+-- Dragging, Minimize, Close
+local dragging = false
+local dragStart, startPos
+bar.InputBegan:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = i.Position
+        startPos = frame.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(i)
+    if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = i.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+end)
+
+local minimized = false
+local originalSize = frame.Size
+minimizeBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        frame.Size = UDim2.new(0, 280, 0, 32)
+        content.Visible = false
+        minimizeBtn.Text = "+"
+    else
+        frame.Size = originalSize
+        content.Visible = true
+        minimizeBtn.Text = "−"
+    end
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    if dashConnection then task.cancel(dashConnection) end
+    gui:Destroy()
+end)
+
+print("hunter's pvp script loaded")
