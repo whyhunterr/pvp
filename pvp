@@ -1,42 +1,36 @@
--- hunter's pvp script (keybind fixed v3)
-
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
-
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
--- GUI Parent
 local function getGuiParent()
     if typeof(gethui) == "function" then return gethui() end
     return LocalPlayer:WaitForChild("PlayerGui")
 end
-
 local gui = Instance.new("ScreenGui")
 gui.Name = "HunterPvpScript"
 gui.ResetOnSpawn = false
 gui.DisplayOrder = 999
 gui.Parent = getGuiParent()
 
--- Main Frame
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 280, 0, 300)
+frame.Size = UDim2.new(0, 280, 0, 440)
 frame.Position = UDim2.new(0.5, -140, 0, 80)
 frame.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
 frame.BorderSizePixel = 0
 frame.Parent = gui
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
-
 local fs = Instance.new("UIStroke", frame)
 fs.Color = Color3.fromRGB(28, 28, 28)
 fs.Thickness = 1
 
--- Title Bar
 local bar = Instance.new("Frame")
 bar.Size = UDim2.new(1, 0, 0, 32)
 bar.BackgroundColor3 = Color3.fromRGB(13, 13, 13)
 bar.BorderSizePixel = 0
 bar.Parent = frame
-
 local titleLbl = Instance.new("TextLabel")
 titleLbl.Size = UDim2.new(1, -70, 1, 0)
 titleLbl.Position = UDim2.new(0, 12, 0, 0)
@@ -78,7 +72,6 @@ content.Position = UDim2.new(0, 0, 0, 32)
 content.BackgroundTransparency = 1
 content.Parent = frame
 
--- Toggle
 local dashToggle = Instance.new("TextButton")
 dashToggle.Size = UDim2.new(1, -22, 0, 36)
 dashToggle.Position = UDim2.new(0, 11, 0, 20)
@@ -90,7 +83,6 @@ dashToggle.TextSize = 14
 dashToggle.Parent = content
 Instance.new("UICorner", dashToggle).CornerRadius = UDim.new(0, 6)
 
--- Strength
 local strengthLabel = Instance.new("TextLabel")
 strengthLabel.Size = UDim2.new(1, -22, 0, 20)
 strengthLabel.Position = UDim2.new(0, 11, 0, 70)
@@ -112,7 +104,6 @@ strengthBox.TextSize = 16
 strengthBox.Parent = content
 Instance.new("UICorner", strengthBox).CornerRadius = UDim.new(0, 6)
 
--- Unbreakable
 local unbreakableToggle = Instance.new("TextButton")
 unbreakableToggle.Size = UDim2.new(1, -22, 0, 36)
 unbreakableToggle.Position = UDim2.new(0, 11, 0, 145)
@@ -124,10 +115,42 @@ unbreakableToggle.TextSize = 14
 unbreakableToggle.Parent = content
 Instance.new("UICorner", unbreakableToggle).CornerRadius = UDim.new(0, 6)
 
--- Keybind
+local antiStunToggle = Instance.new("TextButton")
+antiStunToggle.Size = UDim2.new(1, -22, 0, 36)
+antiStunToggle.Position = UDim2.new(0, 11, 0, 195)
+antiStunToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+antiStunToggle.Text = "ENABLE ANTI STUN"
+antiStunToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+antiStunToggle.Font = Enum.Font.Gotham
+antiStunToggle.TextSize = 14
+antiStunToggle.Parent = content
+Instance.new("UICorner", antiStunToggle).CornerRadius = UDim.new(0, 6)
+
+local killAuraToggle = Instance.new("TextButton")
+killAuraToggle.Size = UDim2.new(1, -22, 0, 36)
+killAuraToggle.Position = UDim2.new(0, 11, 0, 245)
+killAuraToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+killAuraToggle.Text = "ENABLE KILL AURA"
+killAuraToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+killAuraToggle.Font = Enum.Font.Gotham
+killAuraToggle.TextSize = 14
+killAuraToggle.Parent = content
+Instance.new("UICorner", killAuraToggle).CornerRadius = UDim.new(0, 6)
+
+local noClipToggle = Instance.new("TextButton")
+noClipToggle.Size = UDim2.new(1, -22, 0, 36)
+noClipToggle.Position = UDim2.new(0, 11, 0, 295)
+noClipToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+noClipToggle.Text = "ENABLE NO-CLIP"
+noClipToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+noClipToggle.Font = Enum.Font.Gotham
+noClipToggle.TextSize = 14
+noClipToggle.Parent = content
+Instance.new("UICorner", noClipToggle).CornerRadius = UDim.new(0, 6)
+
 local keybindLabel = Instance.new("TextLabel")
 keybindLabel.Size = UDim2.new(1, -22, 0, 40)
-keybindLabel.Position = UDim2.new(0, 11, 0, 195)
+keybindLabel.Position = UDim2.new(0, 11, 0, 345)
 keybindLabel.BackgroundTransparency = 1
 keybindLabel.Text = "toggle gui visibility bind: unbound"
 keybindLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
@@ -139,18 +162,15 @@ keybindLabel.Parent = content
 local currentBind = nil
 local rebinding = false
 local unbreakableEnabled = false
-
 keybindLabel.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         rebinding = true
         keybindLabel.Text = "toggle gui visibility bind: press any key..."
-        task.delay(0.1, function() rebinding = true end) -- small delay
+        task.delay(0.1, function() rebinding = true end)
     end
 end)
-
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
-
     if rebinding then
         if input.KeyCode == Enum.KeyCode.Backspace then
             currentBind = nil
@@ -163,25 +183,23 @@ UserInputService.InputBegan:Connect(function(input, gp)
         rebinding = false
         return
     end
-
     if currentBind and input.KeyCode == currentBind then
         gui.Enabled = not gui.Enabled
     end
 end)
 
--- Dash logic
-local enabled = false
+local dashEnabled = false
 local dashLength = 85
 local dashConnection = nil
-
 dashToggle.MouseButton1Click:Connect(function()
-    enabled = not enabled
-    if enabled then
+    dashEnabled = not dashEnabled
+    if dashEnabled then
         dashToggle.Text = "DISABLE LONG DASH"
         dashToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        if dashConnection then task.cancel(dashConnection) end
         dashConnection = task.spawn(function()
-            while enabled do
-                task.wait(0.15)
+            while dashEnabled do
+                task.wait(0.1)
                 local character = LocalPlayer.Character
                 if character then
                     character:SetAttribute("DashLength", dashLength)
@@ -192,25 +210,38 @@ dashToggle.MouseButton1Click:Connect(function()
     else
         dashToggle.Text = "ENABLE LONG DASH"
         dashToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
-        if dashConnection then task.cancel(dashConnection) end
+        if dashConnection then 
+            task.cancel(dashConnection) 
+            dashConnection = nil 
+        end
+        local character = LocalPlayer.Character
+        if character then
+            character:SetAttribute("DashLength", 1)
+            character:SetAttribute("DashLengthAir", 1)
+        end
     end
 end)
-
 strengthBox.FocusLost:Connect(function()
     local num = tonumber(strengthBox.Text)
     if num then dashLength = math.clamp(num, 1, 500) end
     strengthBox.Text = tostring(dashLength)
 end)
 
--- Unbreakable
+local unbreakableConnection = nil
+local function applyUnbreakable()
+    if unbreakableEnabled and LocalPlayer.Character then
+        LocalPlayer.Character:SetAttribute("Unbreakable", true)
+        LocalPlayer.Character:SetAttribute("UnbreakableAll", true)
+    end
+end
 unbreakableToggle.MouseButton1Click:Connect(function()
     unbreakableEnabled = not unbreakableEnabled
     if unbreakableEnabled then
         unbreakableToggle.Text = "DISABLE UNBREAKABLE"
         unbreakableToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
-        if LocalPlayer.Character then
-            LocalPlayer.Character:SetAttribute("Unbreakable", true)
-            LocalPlayer.Character:SetAttribute("UnbreakableAll", true)
+        applyUnbreakable()
+        if not unbreakableConnection then
+            unbreakableConnection = LocalPlayer.CharacterAdded:Connect(applyUnbreakable)
         end
     else
         unbreakableToggle.Text = "ENABLE UNBREAKABLE"
@@ -222,7 +253,142 @@ unbreakableToggle.MouseButton1Click:Connect(function()
     end
 end)
 
--- Dragging, Minimize, Close
+local antiStunEnabled = false
+local antiStunConnection = nil
+antiStunToggle.MouseButton1Click:Connect(function()
+    antiStunEnabled = not antiStunEnabled
+    if antiStunEnabled then
+        antiStunToggle.Text = "DISABLE ANTI STUN"
+        antiStunToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        antiStunConnection = task.spawn(function()
+            while antiStunEnabled do
+                task.wait(0.1)
+                local char = LocalPlayer.Character
+                if char then
+                    local folder = char:FindFirstChild("AntiMover")
+                    if not folder then
+                        folder = Instance.new("Folder")
+                        folder.Name = "AntiMover"
+                        folder.Parent = char
+                    end
+                end
+            end
+        end)
+    else
+        antiStunToggle.Text = "ENABLE ANTI STUN"
+        antiStunToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+        if antiStunConnection then task.cancel(antiStunConnection) end
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("AntiMover") then
+            char.AntiMover:Destroy()
+        end
+    end
+end)
+
+local kaEnabled = false
+local kaConnection = nil
+local RegisterHit, RegisterAttack
+task.spawn(function()
+    pcall(function()
+        local net = ReplicatedStorage:WaitForChild("Modules", 10):WaitForChild("Net", 10)
+        RegisterHit = net["RE/RegisterHit"]
+        RegisterAttack = net["RE/RegisterAttack"]
+    end)
+end)
+local function getTargets()
+    local myChar = LocalPlayer.Character
+    local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+    if not myHRP then return {} end
+    local targets = {}
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr == LocalPlayer then continue end
+        local char = plr.Character
+        if char then
+            local hum = char:FindFirstChild("Humanoid")
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hum and hrp and hum.Health > 0 and (hrp.Position - myHRP.Position).Magnitude <= 2000 then
+                table.insert(targets, char)
+            end
+        end
+    end
+    local enemiesFolder = Workspace:FindFirstChild("Enemies")
+    if enemiesFolder then
+        for _, npc in pairs(enemiesFolder:GetChildren()) do
+            local hum = npc:FindFirstChild("Humanoid")
+            local hrp = npc:FindFirstChild("HumanoidRootPart")
+            if hum and hrp and hum.Health > 0 and (hrp.Position - myHRP.Position).Magnitude <= 2000 then
+                table.insert(targets, npc)
+            end
+        end
+    end
+    return targets
+end
+local function attackTargets(targets)
+    if not RegisterHit or not RegisterAttack or #targets == 0 then return end
+    pcall(function()
+        local all = {}
+        for _, c in pairs(targets) do
+            local head = c:FindFirstChild("Head") or c:FindFirstChildWhichIsA("BasePart")
+            if head then table.insert(all, {c, head}) end
+        end
+        if #all == 0 then return end
+        RegisterAttack:FireServer(0)
+        RegisterHit:FireServer(all[1][2], all)
+    end)
+end
+killAuraToggle.MouseButton1Click:Connect(function()
+    kaEnabled = not kaEnabled
+    if kaEnabled then
+        killAuraToggle.Text = "DISABLE KILL AURA"
+        killAuraToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        kaConnection = task.spawn(function()
+            while kaEnabled do
+                task.wait(0.001)
+                attackTargets(getTargets())
+            end
+        end)
+    else
+        killAuraToggle.Text = "ENABLE KILL AURA"
+        killAuraToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+        if kaConnection then task.cancel(kaConnection) end
+    end
+end)
+
+local noClipEnabled = false
+local noClipConnection = nil
+noClipToggle.MouseButton1Click:Connect(function()
+    noClipEnabled = not noClipEnabled
+    if noClipEnabled then
+        noClipToggle.Text = "DISABLE NO-CLIP"
+        noClipToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        noClipConnection = RunService.Stepped:Connect(function()
+            local char = LocalPlayer.Character
+            if char then
+                for _, part in pairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") and part.CanCollide then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        noClipToggle.Text = "ENABLE NO-CLIP"
+        noClipToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+        if noClipConnection then
+            noClipConnection:Disconnect()
+            noClipConnection = nil
+        end
+        local char = LocalPlayer.Character
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+end)
+
 local dragging = false
 local dragStart, startPos
 bar.InputBegan:Connect(function(i)
@@ -232,14 +398,12 @@ bar.InputBegan:Connect(function(i)
         startPos = frame.Position
     end
 end)
-
 UserInputService.InputChanged:Connect(function(i)
     if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
         local delta = i.Position - dragStart
         frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
-
 UserInputService.InputEnded:Connect(function(i)
     if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
 end)
@@ -258,9 +422,12 @@ minimizeBtn.MouseButton1Click:Connect(function()
         minimizeBtn.Text = "−"
     end
 end)
-
 closeBtn.MouseButton1Click:Connect(function()
     if dashConnection then task.cancel(dashConnection) end
+    if antiStunConnection then task.cancel(antiStunConnection) end
+    if kaConnection then task.cancel(kaConnection) end
+    if noClipConnection then noClipConnection:Disconnect() end
+    if unbreakableConnection then unbreakableConnection:Disconnect() end
     gui:Destroy()
 end)
 
