@@ -3,6 +3,7 @@ local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
+local TextService = game:GetService("TextService")
 local LocalPlayer = Players.LocalPlayer
 
 local function getGuiParent()
@@ -72,9 +73,30 @@ content.Position = UDim2.new(0, 0, 0, 32)
 content.BackgroundTransparency = 1
 content.Parent = frame
 
+local dashEnabled = false
+local dashLength = 85
+local dashConnection = nil
+local unbreakableEnabled = false
+local unbreakableConnection = nil
+local antiStunEnabled = false
+local antiStunConnection = nil
+local kaEnabled = false
+local kaConnection = nil
+local noClipEnabled = false
+local noClipConnection = nil
+
+local guiBind = nil
+local dashBind = nil
+local unbreakableBind = nil
+local antiStunBind = nil
+local killAuraBind = nil
+local noClipBind = nil
+local rebinding = false
+local activeRebindLabel = nil
+
 local dashToggle = Instance.new("TextButton")
-dashToggle.Size = UDim2.new(1, -22, 0, 36)
-dashToggle.Position = UDim2.new(0, 11, 0, 20)
+dashToggle.Size = UDim2.new(1, -22, 0, 28)
+dashToggle.Position = UDim2.new(0, 11, 0, 8)
 dashToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 dashToggle.Text = "ENABLE LONG DASH"
 dashToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
@@ -84,8 +106,8 @@ dashToggle.Parent = content
 Instance.new("UICorner", dashToggle).CornerRadius = UDim.new(0, 6)
 
 local strengthLabel = Instance.new("TextLabel")
-strengthLabel.Size = UDim2.new(1, -22, 0, 20)
-strengthLabel.Position = UDim2.new(0, 11, 0, 70)
+strengthLabel.Size = UDim2.new(1, -22, 0, 16)
+strengthLabel.Position = UDim2.new(0, 11, 0, 40)
 strengthLabel.BackgroundTransparency = 1
 strengthLabel.Text = "dash length"
 strengthLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
@@ -94,8 +116,8 @@ strengthLabel.TextSize = 12
 strengthLabel.Parent = content
 
 local strengthBox = Instance.new("TextBox")
-strengthBox.Size = UDim2.new(1, -22, 0, 36)
-strengthBox.Position = UDim2.new(0, 11, 0, 95)
+strengthBox.Size = UDim2.new(1, -22, 0, 28)
+strengthBox.Position = UDim2.new(0, 11, 0, 58)
 strengthBox.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 strengthBox.Text = "85"
 strengthBox.TextColor3 = Color3.fromRGB(210, 210, 210)
@@ -105,8 +127,8 @@ strengthBox.Parent = content
 Instance.new("UICorner", strengthBox).CornerRadius = UDim.new(0, 6)
 
 local unbreakableToggle = Instance.new("TextButton")
-unbreakableToggle.Size = UDim2.new(1, -22, 0, 36)
-unbreakableToggle.Position = UDim2.new(0, 11, 0, 145)
+unbreakableToggle.Size = UDim2.new(1, -22, 0, 28)
+unbreakableToggle.Position = UDim2.new(0, 11, 0, 92)
 unbreakableToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 unbreakableToggle.Text = "ENABLE UNBREAKABLE"
 unbreakableToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
@@ -116,8 +138,8 @@ unbreakableToggle.Parent = content
 Instance.new("UICorner", unbreakableToggle).CornerRadius = UDim.new(0, 6)
 
 local antiStunToggle = Instance.new("TextButton")
-antiStunToggle.Size = UDim2.new(1, -22, 0, 36)
-antiStunToggle.Position = UDim2.new(0, 11, 0, 195)
+antiStunToggle.Size = UDim2.new(1, -22, 0, 28)
+antiStunToggle.Position = UDim2.new(0, 11, 0, 126)
 antiStunToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 antiStunToggle.Text = "ENABLE ANTI STUN"
 antiStunToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
@@ -127,8 +149,8 @@ antiStunToggle.Parent = content
 Instance.new("UICorner", antiStunToggle).CornerRadius = UDim.new(0, 6)
 
 local killAuraToggle = Instance.new("TextButton")
-killAuraToggle.Size = UDim2.new(1, -22, 0, 36)
-killAuraToggle.Position = UDim2.new(0, 11, 0, 245)
+killAuraToggle.Size = UDim2.new(1, -22, 0, 28)
+killAuraToggle.Position = UDim2.new(0, 11, 0, 160)
 killAuraToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 killAuraToggle.Text = "ENABLE KILL AURA"
 killAuraToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
@@ -138,8 +160,8 @@ killAuraToggle.Parent = content
 Instance.new("UICorner", killAuraToggle).CornerRadius = UDim.new(0, 6)
 
 local noClipToggle = Instance.new("TextButton")
-noClipToggle.Size = UDim2.new(1, -22, 0, 36)
-noClipToggle.Position = UDim2.new(0, 11, 0, 295)
+noClipToggle.Size = UDim2.new(1, -22, 0, 28)
+noClipToggle.Position = UDim2.new(0, 11, 0, 194)
 noClipToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 noClipToggle.Text = "ENABLE NO-CLIP"
 noClipToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
@@ -148,50 +170,58 @@ noClipToggle.TextSize = 14
 noClipToggle.Parent = content
 Instance.new("UICorner", noClipToggle).CornerRadius = UDim.new(0, 6)
 
-local keybindLabel = Instance.new("TextLabel")
-keybindLabel.Size = UDim2.new(1, -22, 0, 40)
-keybindLabel.Position = UDim2.new(0, 11, 0, 345)
-keybindLabel.BackgroundTransparency = 1
-keybindLabel.Text = "toggle gui visibility bind: unbound"
-keybindLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
-keybindLabel.Font = Enum.Font.Gotham
-keybindLabel.TextSize = 12
-keybindLabel.TextWrapped = true
-keybindLabel.Parent = content
+local keybindsHeader = Instance.new("TextLabel")
+keybindsHeader.Size = UDim2.new(1, -22, 0, 18)
+keybindsHeader.Position = UDim2.new(0, 11, 0, 230)
+keybindsHeader.BackgroundTransparency = 1
+keybindsHeader.Text = "keybinds (click to change; backspace=unbound)"
+keybindsHeader.TextColor3 = Color3.fromRGB(220, 220, 220)
+keybindsHeader.Font = Enum.Font.GothamBold
+keybindsHeader.TextSize = 12
+keybindsHeader.TextXAlignment = Enum.TextXAlignment.Left
+keybindsHeader.Parent = content
 
-local currentBind = nil
-local rebinding = false
-local unbreakableEnabled = false
-keybindLabel.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        rebinding = true
-        keybindLabel.Text = "toggle gui visibility bind: press any key..."
-        task.delay(0.1, function() rebinding = true end)
-    end
-end)
-UserInputService.InputBegan:Connect(function(input, gp)
-    if gp then return end
-    if rebinding then
-        if input.KeyCode == Enum.KeyCode.Backspace then
-            currentBind = nil
-            keybindLabel.Text = "toggle gui visibility bind: unbound"
-        else
-            currentBind = input.KeyCode
-            local keyName = tostring(input.KeyCode):gsub("Enum.KeyCode.", "")
-            keybindLabel.Text = "toggle gui visibility bind: " .. keyName
+local headerBounds = TextService:GetTextSize(keybindsHeader.Text, keybindsHeader.TextSize, keybindsHeader.Font, Vector2.new(10000, 10000))
+local keybindsUnderline = Instance.new("Frame")
+keybindsUnderline.Size = UDim2.new(0, headerBounds.X, 0, 1)
+keybindsUnderline.Position = UDim2.new(0, 11, 0, 250)
+keybindsUnderline.BackgroundColor3 = Color3.fromRGB(110, 110, 110)
+keybindsUnderline.BorderSizePixel = 0
+keybindsUnderline.Parent = content
+
+local function createKeybindLabel(yPos, displayName)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -22, 0, 18)
+    lbl.Position = UDim2.new(0, 11, 0, yPos)
+    lbl.BackgroundTransparency = 1
+    lbl.TextColor3 = Color3.fromRGB(160, 160, 160)
+    lbl.Font = Enum.Font.Gotham
+    lbl.TextSize = 11
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = content
+
+    local baseText = displayName .. " bind: "
+    lbl.Text = baseText .. "unbound"
+    lbl:SetAttribute("baseText", baseText)
+
+    lbl.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            rebinding = true
+            activeRebindLabel = lbl
+            lbl.Text = baseText .. "press any key..."
         end
-        rebinding = false
-        return
-    end
-    if currentBind and input.KeyCode == currentBind then
-        gui.Enabled = not gui.Enabled
-    end
-end)
+    end)
+    return lbl
+end
 
-local dashEnabled = false
-local dashLength = 85
-local dashConnection = nil
-dashToggle.MouseButton1Click:Connect(function()
+local guiKeyLabel = createKeybindLabel(255, "toggle gui visibility")
+local dashKeyLabel = createKeybindLabel(274, "long dash")
+local unbreakableKeyLabel = createKeybindLabel(293, "unbreakable")
+local antiStunKeyLabel = createKeybindLabel(312, "anti stun")
+local killAuraKeyLabel = createKeybindLabel(331, "kill aura")
+local noClipKeyLabel = createKeybindLabel(350, "no-clip")
+
+local function toggleDash()
     dashEnabled = not dashEnabled
     if dashEnabled then
         dashToggle.Text = "DISABLE LONG DASH"
@@ -220,21 +250,16 @@ dashToggle.MouseButton1Click:Connect(function()
             character:SetAttribute("DashLengthAir", 1)
         end
     end
-end)
-strengthBox.FocusLost:Connect(function()
-    local num = tonumber(strengthBox.Text)
-    if num then dashLength = math.clamp(num, 1, 500) end
-    strengthBox.Text = tostring(dashLength)
-end)
+end
 
-local unbreakableConnection = nil
 local function applyUnbreakable()
     if unbreakableEnabled and LocalPlayer.Character then
         LocalPlayer.Character:SetAttribute("Unbreakable", true)
         LocalPlayer.Character:SetAttribute("UnbreakableAll", true)
     end
 end
-unbreakableToggle.MouseButton1Click:Connect(function()
+
+local function toggleUnbreakable()
     unbreakableEnabled = not unbreakableEnabled
     if unbreakableEnabled then
         unbreakableToggle.Text = "DISABLE UNBREAKABLE"
@@ -251,15 +276,14 @@ unbreakableToggle.MouseButton1Click:Connect(function()
             LocalPlayer.Character:SetAttribute("UnbreakableAll", false)
         end
     end
-end)
+end
 
-local antiStunEnabled = false
-local antiStunConnection = nil
-antiStunToggle.MouseButton1Click:Connect(function()
+local function toggleAntiStun()
     antiStunEnabled = not antiStunEnabled
     if antiStunEnabled then
         antiStunToggle.Text = "DISABLE ANTI STUN"
         antiStunToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        if antiStunConnection then task.cancel(antiStunConnection) end
         antiStunConnection = task.spawn(function()
             while antiStunEnabled do
                 task.wait(0.1)
@@ -277,16 +301,17 @@ antiStunToggle.MouseButton1Click:Connect(function()
     else
         antiStunToggle.Text = "ENABLE ANTI STUN"
         antiStunToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
-        if antiStunConnection then task.cancel(antiStunConnection) end
+        if antiStunConnection then 
+            task.cancel(antiStunConnection) 
+            antiStunConnection = nil
+        end
         local char = LocalPlayer.Character
         if char and char:FindFirstChild("AntiMover") then
             char.AntiMover:Destroy()
         end
     end
-end)
+end
 
-local kaEnabled = false
-local kaConnection = nil
 local RegisterHit, RegisterAttack
 task.spawn(function()
     pcall(function()
@@ -295,6 +320,7 @@ task.spawn(function()
         RegisterAttack = net["RE/RegisterAttack"]
     end)
 end)
+
 local function getTargets()
     local myChar = LocalPlayer.Character
     local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
@@ -323,6 +349,7 @@ local function getTargets()
     end
     return targets
 end
+
 local function attackTargets(targets)
     if not RegisterHit or not RegisterAttack or #targets == 0 then return end
     pcall(function()
@@ -336,11 +363,13 @@ local function attackTargets(targets)
         RegisterHit:FireServer(all[1][2], all)
     end)
 end
-killAuraToggle.MouseButton1Click:Connect(function()
+
+local function toggleKillAura()
     kaEnabled = not kaEnabled
     if kaEnabled then
         killAuraToggle.Text = "DISABLE KILL AURA"
         killAuraToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        if kaConnection then task.cancel(kaConnection) end
         kaConnection = task.spawn(function()
             while kaEnabled do
                 task.wait(0.001)
@@ -351,16 +380,16 @@ killAuraToggle.MouseButton1Click:Connect(function()
         killAuraToggle.Text = "ENABLE KILL AURA"
         killAuraToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
         if kaConnection then task.cancel(kaConnection) end
+        kaConnection = nil
     end
-end)
+end
 
-local noClipEnabled = false
-local noClipConnection = nil
-noClipToggle.MouseButton1Click:Connect(function()
+local function toggleNoClip()
     noClipEnabled = not noClipEnabled
     if noClipEnabled then
         noClipToggle.Text = "DISABLE NO-CLIP"
         noClipToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        if noClipConnection then noClipConnection:Disconnect() end
         noClipConnection = RunService.Stepped:Connect(function()
             local char = LocalPlayer.Character
             if char then
@@ -386,6 +415,95 @@ noClipToggle.MouseButton1Click:Connect(function()
                 end
             end
         end
+    end
+end
+
+dashToggle.MouseButton1Click:Connect(toggleDash)
+unbreakableToggle.MouseButton1Click:Connect(toggleUnbreakable)
+antiStunToggle.MouseButton1Click:Connect(toggleAntiStun)
+killAuraToggle.MouseButton1Click:Connect(toggleKillAura)
+noClipToggle.MouseButton1Click:Connect(toggleNoClip)
+
+strengthBox.FocusLost:Connect(function()
+    local num = tonumber(strengthBox.Text)
+    if num then dashLength = math.clamp(num, 1, 500) end
+    strengthBox.Text = tostring(dashLength)
+end)
+
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if rebinding and activeRebindLabel then
+        if input.UserInputType ~= Enum.UserInputType.Keyboard then
+            return
+        end
+
+        local baseText = activeRebindLabel:GetAttribute("baseText") or "bind: "
+        if input.KeyCode == Enum.KeyCode.Backspace then
+            if activeRebindLabel == guiKeyLabel then guiBind = nil
+            elseif activeRebindLabel == dashKeyLabel then dashBind = nil
+            elseif activeRebindLabel == unbreakableKeyLabel then unbreakableBind = nil
+            elseif activeRebindLabel == antiStunKeyLabel then antiStunBind = nil
+            elseif activeRebindLabel == killAuraKeyLabel then killAuraBind = nil
+            elseif activeRebindLabel == noClipKeyLabel then noClipBind = nil
+            end
+            activeRebindLabel.Text = baseText .. "unbound"
+        else
+            local newKey = input.KeyCode
+            local keyName = newKey.Name
+
+            local conflictWithOther = false
+            if newKey == guiBind and activeRebindLabel ~= guiKeyLabel then conflictWithOther = true end
+            if newKey == dashBind and activeRebindLabel ~= dashKeyLabel then conflictWithOther = true end
+            if newKey == unbreakableBind and activeRebindLabel ~= unbreakableKeyLabel then conflictWithOther = true end
+            if newKey == antiStunBind and activeRebindLabel ~= antiStunKeyLabel then conflictWithOther = true end
+            if newKey == killAuraBind and activeRebindLabel ~= killAuraKeyLabel then conflictWithOther = true end
+            if newKey == noClipBind and activeRebindLabel ~= noClipKeyLabel then conflictWithOther = true end
+
+            if conflictWithOther then
+                if activeRebindLabel == guiKeyLabel then guiBind = nil
+                elseif activeRebindLabel == dashKeyLabel then dashBind = nil
+                elseif activeRebindLabel == unbreakableKeyLabel then unbreakableBind = nil
+                elseif activeRebindLabel == antiStunKeyLabel then antiStunBind = nil
+                elseif activeRebindLabel == killAuraKeyLabel then killAuraBind = nil
+                elseif activeRebindLabel == noClipKeyLabel then noClipBind = nil
+                end
+                activeRebindLabel.Text = baseText .. "unbound"
+                rebinding = false
+                activeRebindLabel = nil
+                return
+            end
+
+            if activeRebindLabel == guiKeyLabel then guiBind = newKey
+            elseif activeRebindLabel == dashKeyLabel then dashBind = newKey
+            elseif activeRebindLabel == unbreakableKeyLabel then unbreakableBind = newKey
+            elseif activeRebindLabel == antiStunKeyLabel then antiStunBind = newKey
+            elseif activeRebindLabel == killAuraKeyLabel then killAuraBind = newKey
+            elseif activeRebindLabel == noClipKeyLabel then noClipBind = newKey
+            end
+            activeRebindLabel.Text = baseText .. keyName
+        end
+        rebinding = false
+        activeRebindLabel = nil
+        return
+    end
+
+    if guiBind and input.KeyCode == guiBind then
+        gui.Enabled = not gui.Enabled
+    end
+    if dashBind and input.KeyCode == dashBind then
+        toggleDash()
+    end
+    if unbreakableBind and input.KeyCode == unbreakableBind then
+        toggleUnbreakable()
+    end
+    if antiStunBind and input.KeyCode == antiStunBind then
+        toggleAntiStun()
+    end
+    if killAuraBind and input.KeyCode == killAuraBind then
+        toggleKillAura()
+    end
+    if noClipBind and input.KeyCode == noClipBind then
+        toggleNoClip()
     end
 end)
 
