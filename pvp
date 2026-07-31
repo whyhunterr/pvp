@@ -17,8 +17,8 @@ gui.DisplayOrder = 999
 gui.Parent = getGuiParent()
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 280, 0, 440)
-frame.Position = UDim2.new(0.5, -140, 0, 80)
+frame.Size = UDim2.new(0, 280, 0, 645)
+frame.Position = UDim2.new(0.5, -140, 0, 40)
 frame.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
 frame.BorderSizePixel = 0
 frame.Parent = gui
@@ -85,12 +85,21 @@ local kaConnection = nil
 local noClipEnabled = false
 local noClipConnection = nil
 
+local invisEnabled = false
+local walkSpeedEnabled = false
+local walkSpeedValue = 50
+local flightEnabled = false
+local flightSpeedValue = 50
+
 local guiBind = nil
 local dashBind = nil
 local unbreakableBind = nil
 local antiStunBind = nil
 local killAuraBind = nil
 local noClipBind = nil
+local invisBind = nil
+local walkSpeedBind = nil
+local flightBind = nil
 local rebinding = false
 local activeRebindLabel = nil
 
@@ -170,9 +179,118 @@ noClipToggle.TextSize = 14
 noClipToggle.Parent = content
 Instance.new("UICorner", noClipToggle).CornerRadius = UDim.new(0, 6)
 
+local invisToggle = Instance.new("TextButton")
+invisToggle.Size = UDim2.new(1, -22, 0, 28)
+invisToggle.Position = UDim2.new(0, 11, 0, 228)
+invisToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+invisToggle.Text = "ENABLE INVISIBILITY"
+invisToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+invisToggle.Font = Enum.Font.Gotham
+invisToggle.TextSize = 14
+invisToggle.Parent = content
+Instance.new("UICorner", invisToggle).CornerRadius = UDim.new(0, 6)
+
+local walkSpeedToggle = Instance.new("TextButton")
+walkSpeedToggle.Size = UDim2.new(1, -22, 0, 28)
+walkSpeedToggle.Position = UDim2.new(0, 11, 0, 262)
+walkSpeedToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+walkSpeedToggle.Text = "ENABLE WALKSPEED"
+walkSpeedToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+walkSpeedToggle.Font = Enum.Font.Gotham
+walkSpeedToggle.TextSize = 14
+walkSpeedToggle.Parent = content
+Instance.new("UICorner", walkSpeedToggle).CornerRadius = UDim.new(0, 6)
+
+local walkSpeedControl = Instance.new("Frame")
+walkSpeedControl.Size = UDim2.new(1, -22, 0, 26)
+walkSpeedControl.Position = UDim2.new(0, 11, 0, 294)
+walkSpeedControl.BackgroundTransparency = 1
+walkSpeedControl.Parent = content
+
+local walkMinus = Instance.new("TextButton")
+walkMinus.Size = UDim2.new(0, 30, 1, 0)
+walkMinus.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+walkMinus.Text = "-"
+walkMinus.TextColor3 = Color3.fromRGB(210, 210, 210)
+walkMinus.Font = Enum.Font.GothamBold
+walkMinus.TextSize = 18
+walkMinus.Parent = walkSpeedControl
+Instance.new("UICorner", walkMinus).CornerRadius = UDim.new(0, 4)
+
+local walkSpeedBox = Instance.new("TextBox")
+walkSpeedBox.Size = UDim2.new(1, -70, 1, 0)
+walkSpeedBox.Position = UDim2.new(0, 35, 0, 0)
+walkSpeedBox.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+walkSpeedBox.Text = "50"
+walkSpeedBox.TextColor3 = Color3.fromRGB(210, 210, 210)
+walkSpeedBox.Font = Enum.Font.GothamBold
+walkSpeedBox.TextSize = 14
+walkSpeedBox.Parent = walkSpeedControl
+Instance.new("UICorner", walkSpeedBox).CornerRadius = UDim.new(0, 4)
+
+local walkPlus = Instance.new("TextButton")
+walkPlus.Size = UDim2.new(0, 30, 1, 0)
+walkPlus.Position = UDim2.new(1, -30, 0, 0)
+walkPlus.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+walkPlus.Text = "+"
+walkPlus.TextColor3 = Color3.fromRGB(210, 210, 210)
+walkPlus.Font = Enum.Font.GothamBold
+walkPlus.TextSize = 18
+walkPlus.Parent = walkSpeedControl
+Instance.new("UICorner", walkPlus).CornerRadius = UDim.new(0, 4)
+
+local flightToggle = Instance.new("TextButton")
+flightToggle.Size = UDim2.new(1, -22, 0, 28)
+flightToggle.Position = UDim2.new(0, 11, 0, 328)
+flightToggle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+flightToggle.Text = "ENABLE FLIGHT"
+flightToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+flightToggle.Font = Enum.Font.Gotham
+flightToggle.TextSize = 14
+flightToggle.Parent = content
+Instance.new("UICorner", flightToggle).CornerRadius = UDim.new(0, 6)
+
+local flightControl = Instance.new("Frame")
+flightControl.Size = UDim2.new(1, -22, 0, 26)
+flightControl.Position = UDim2.new(0, 11, 0, 360)
+flightControl.BackgroundTransparency = 1
+flightControl.Parent = content
+
+local flightMinus = Instance.new("TextButton")
+flightMinus.Size = UDim2.new(0, 30, 1, 0)
+flightMinus.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+flightMinus.Text = "-"
+flightMinus.TextColor3 = Color3.fromRGB(210, 210, 210)
+flightMinus.Font = Enum.Font.GothamBold
+flightMinus.TextSize = 18
+flightMinus.Parent = flightControl
+Instance.new("UICorner", flightMinus).CornerRadius = UDim.new(0, 4)
+
+local flightSpeedBox = Instance.new("TextBox")
+flightSpeedBox.Size = UDim2.new(1, -70, 1, 0)
+flightSpeedBox.Position = UDim2.new(0, 35, 0, 0)
+flightSpeedBox.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+flightSpeedBox.Text = "50"
+flightSpeedBox.TextColor3 = Color3.fromRGB(210, 210, 210)
+flightSpeedBox.Font = Enum.Font.GothamBold
+flightSpeedBox.TextSize = 14
+flightSpeedBox.Parent = flightControl
+Instance.new("UICorner", flightSpeedBox).CornerRadius = UDim.new(0, 4)
+
+local flightPlus = Instance.new("TextButton")
+flightPlus.Size = UDim2.new(0, 30, 1, 0)
+flightPlus.Position = UDim2.new(1, -30, 0, 0)
+flightPlus.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+flightPlus.Text = "+"
+flightPlus.TextColor3 = Color3.fromRGB(210, 210, 210)
+flightPlus.Font = Enum.Font.GothamBold
+flightPlus.TextSize = 18
+flightPlus.Parent = flightControl
+Instance.new("UICorner", flightPlus).CornerRadius = UDim.new(0, 4)
+
 local keybindsHeader = Instance.new("TextLabel")
 keybindsHeader.Size = UDim2.new(1, -22, 0, 18)
-keybindsHeader.Position = UDim2.new(0, 11, 0, 230)
+keybindsHeader.Position = UDim2.new(0, 11, 0, 400)
 keybindsHeader.BackgroundTransparency = 1
 keybindsHeader.Text = "keybinds (click to change; backspace=unbound)"
 keybindsHeader.TextColor3 = Color3.fromRGB(220, 220, 220)
@@ -184,7 +302,7 @@ keybindsHeader.Parent = content
 local headerBounds = TextService:GetTextSize(keybindsHeader.Text, keybindsHeader.TextSize, keybindsHeader.Font, Vector2.new(10000, 10000))
 local keybindsUnderline = Instance.new("Frame")
 keybindsUnderline.Size = UDim2.new(0, headerBounds.X, 0, 1)
-keybindsUnderline.Position = UDim2.new(0, 11, 0, 250)
+keybindsUnderline.Position = UDim2.new(0, 11, 0, 420)
 keybindsUnderline.BackgroundColor3 = Color3.fromRGB(110, 110, 110)
 keybindsUnderline.BorderSizePixel = 0
 keybindsUnderline.Parent = content
@@ -199,11 +317,9 @@ local function createKeybindLabel(yPos, displayName)
     lbl.TextSize = 11
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = content
-
     local baseText = displayName .. " bind: "
     lbl.Text = baseText .. "unbound"
     lbl:SetAttribute("baseText", baseText)
-
     lbl.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             rebinding = true
@@ -214,12 +330,15 @@ local function createKeybindLabel(yPos, displayName)
     return lbl
 end
 
-local guiKeyLabel = createKeybindLabel(255, "toggle gui visibility")
-local dashKeyLabel = createKeybindLabel(274, "long dash")
-local unbreakableKeyLabel = createKeybindLabel(293, "unbreakable")
-local antiStunKeyLabel = createKeybindLabel(312, "anti stun")
-local killAuraKeyLabel = createKeybindLabel(331, "kill aura")
-local noClipKeyLabel = createKeybindLabel(350, "no-clip")
+local guiKeyLabel = createKeybindLabel(425, "toggle gui visibility")
+local dashKeyLabel = createKeybindLabel(444, "long dash")
+local unbreakableKeyLabel = createKeybindLabel(463, "unbreakable")
+local antiStunKeyLabel = createKeybindLabel(482, "anti stun")
+local killAuraKeyLabel = createKeybindLabel(501, "kill aura")
+local noClipKeyLabel = createKeybindLabel(520, "no-clip")
+local invisKeyLabel = createKeybindLabel(539, "invisibility")
+local walkSpeedKeyLabel = createKeybindLabel(558, "walkspeed")
+local flightKeyLabel = createKeybindLabel(577, "flight")
 
 local function toggleDash()
     dashEnabled = not dashEnabled
@@ -240,10 +359,7 @@ local function toggleDash()
     else
         dashToggle.Text = "ENABLE LONG DASH"
         dashToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
-        if dashConnection then 
-            task.cancel(dashConnection) 
-            dashConnection = nil 
-        end
+        if dashConnection then task.cancel(dashConnection) dashConnection = nil end
         local character = LocalPlayer.Character
         if character then
             character:SetAttribute("DashLength", 1)
@@ -301,14 +417,9 @@ local function toggleAntiStun()
     else
         antiStunToggle.Text = "ENABLE ANTI STUN"
         antiStunToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
-        if antiStunConnection then 
-            task.cancel(antiStunConnection) 
-            antiStunConnection = nil
-        end
+        if antiStunConnection then task.cancel(antiStunConnection) antiStunConnection = nil end
         local char = LocalPlayer.Character
-        if char and char:FindFirstChild("AntiMover") then
-            char.AntiMover:Destroy()
-        end
+        if char and char:FindFirstChild("AntiMover") then char.AntiMover:Destroy() end
     end
 end
 
@@ -403,18 +514,95 @@ local function toggleNoClip()
     else
         noClipToggle.Text = "ENABLE NO-CLIP"
         noClipToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
-        if noClipConnection then
-            noClipConnection:Disconnect()
-            noClipConnection = nil
-        end
+        if noClipConnection then noClipConnection:Disconnect() noClipConnection = nil end
         local char = LocalPlayer.Character
         if char then
             for _, part in pairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = true
-                end
+                if part:IsA("BasePart") then part.CanCollide = true end
             end
         end
+    end
+end
+
+local function makeInvisible(char)
+    if not char then return end
+    for _, obj in pairs(char:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            obj.Transparency = 1
+        elseif obj:IsA("Decal") or obj:IsA("Texture") then
+            obj.Transparency = 1
+        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") or obj:IsA("Fire") or obj:IsA("Smoke") then
+            obj.Enabled = false
+        end
+    end
+end
+
+local function restoreVisibility(char)
+    if not char then return end
+    local bodyParts = {
+        "Head", "UpperTorso", "LowerTorso", "Torso",
+        "LeftUpperArm", "LeftLowerArm", "LeftHand", "Left Arm",
+        "RightUpperArm", "RightLowerArm", "RightHand", "Right Arm",
+        "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "Left Leg",
+        "RightUpperLeg", "RightLowerLeg", "RightFoot", "Right Leg"
+    }
+    for _, name in ipairs(bodyParts) do
+        local part = char:FindFirstChild(name)
+        if part and part:IsA("BasePart") then
+            part.Transparency = 0
+        end
+    end
+    local head = char:FindFirstChild("Head")
+    if head then
+        for _, obj in pairs(head:GetChildren()) do
+            if obj:IsA("Decal") or obj:IsA("Texture") then
+                obj.Transparency = 0
+            end
+        end
+    end
+end
+
+local function toggleInvis()
+    invisEnabled = not invisEnabled
+    if invisEnabled then
+        invisToggle.Text = "DISABLE INVISIBILITY"
+        invisToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+        if LocalPlayer.Character then
+            makeInvisible(LocalPlayer.Character)
+        end
+    else
+        invisToggle.Text = "ENABLE INVISIBILITY"
+        invisToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+        if LocalPlayer.Character then
+            restoreVisibility(LocalPlayer.Character)
+        end
+    end
+end
+
+local function toggleWalkSpeed()
+    walkSpeedEnabled = not walkSpeedEnabled
+    if walkSpeedEnabled then
+        walkSpeedToggle.Text = "DISABLE WALKSPEED"
+        walkSpeedToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+    else
+        walkSpeedToggle.Text = "ENABLE WALKSPEED"
+        walkSpeedToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
+        local char = LocalPlayer.Character
+        if char then
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if hum then hum.WalkSpeed = 16 end
+        end
+    end
+end
+
+local function toggleFlight()
+    flightEnabled = not flightEnabled
+    if flightEnabled then
+        flightToggle.Text = "DISABLE FLIGHT"
+        flightToggle.TextColor3 = Color3.fromRGB(255, 100, 100)
+    else
+        flightToggle.Text = "ENABLE FLIGHT"
+        flightToggle.TextColor3 = Color3.fromRGB(210, 210, 210)
     end
 end
 
@@ -423,6 +611,37 @@ unbreakableToggle.MouseButton1Click:Connect(toggleUnbreakable)
 antiStunToggle.MouseButton1Click:Connect(toggleAntiStun)
 killAuraToggle.MouseButton1Click:Connect(toggleKillAura)
 noClipToggle.MouseButton1Click:Connect(toggleNoClip)
+invisToggle.MouseButton1Click:Connect(toggleInvis)
+walkSpeedToggle.MouseButton1Click:Connect(toggleWalkSpeed)
+flightToggle.MouseButton1Click:Connect(toggleFlight)
+
+walkMinus.MouseButton1Click:Connect(function()
+    walkSpeedValue = math.clamp(walkSpeedValue - 5, 1, 1000)
+    walkSpeedBox.Text = tostring(walkSpeedValue)
+end)
+walkPlus.MouseButton1Click:Connect(function()
+    walkSpeedValue = math.clamp(walkSpeedValue + 5, 1, 1000)
+    walkSpeedBox.Text = tostring(walkSpeedValue)
+end)
+walkSpeedBox.FocusLost:Connect(function()
+    local num = tonumber(walkSpeedBox.Text)
+    if num then walkSpeedValue = math.clamp(num, 1, 1000) end
+    walkSpeedBox.Text = tostring(walkSpeedValue)
+end)
+
+flightMinus.MouseButton1Click:Connect(function()
+    flightSpeedValue = math.clamp(flightSpeedValue - 5, 1, 1000)
+    flightSpeedBox.Text = tostring(flightSpeedValue)
+end)
+flightPlus.MouseButton1Click:Connect(function()
+    flightSpeedValue = math.clamp(flightSpeedValue + 5, 1, 1000)
+    flightSpeedBox.Text = tostring(flightSpeedValue)
+end)
+flightSpeedBox.FocusLost:Connect(function()
+    local num = tonumber(flightSpeedBox.Text)
+    if num then flightSpeedValue = math.clamp(num, 1, 1000) end
+    flightSpeedBox.Text = tostring(flightSpeedValue)
+end)
 
 strengthBox.FocusLost:Connect(function()
     local num = tonumber(strengthBox.Text)
@@ -430,13 +649,60 @@ strengthBox.FocusLost:Connect(function()
     strengthBox.Text = tostring(dashLength)
 end)
 
+RunService.RenderStepped:Connect(function()
+    if walkSpeedEnabled then
+        local char = LocalPlayer.Character
+        if char then
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum.WalkSpeed = walkSpeedValue
+            end
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if invisEnabled then
+        makeInvisible(char)
+    end
+    if flightEnabled and hrp and hum then
+        hum.PlatformStand = true
+        local cam = Workspace.CurrentCamera
+        local dir = Vector3.zero
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir = dir + cam.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir = dir - cam.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir = dir - cam.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + cam.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then dir = dir + Vector3.new(0, 1, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or UserInputService:IsKeyDown(Enum.KeyCode.C) then
+            dir = dir + Vector3.new(0, -1, 0)
+        end
+        if dir.Magnitude > 0 then
+            hrp.AssemblyLinearVelocity = dir.Unit * flightSpeedValue
+        else
+            hrp.AssemblyLinearVelocity = Vector3.zero
+        end
+    else
+        if hum then
+            hum.PlatformStand = false
+        end
+    end
+end)
+
+LocalPlayer.CharacterAdded:Connect(function(char)
+    task.wait(0.5)
+    if invisEnabled then makeInvisible(char) end
+    if unbreakableEnabled then applyUnbreakable() end
+end)
+
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     if rebinding and activeRebindLabel then
-        if input.UserInputType ~= Enum.UserInputType.Keyboard then
-            return
-        end
-
+        if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
         local baseText = activeRebindLabel:GetAttribute("baseText") or "bind: "
         if input.KeyCode == Enum.KeyCode.Backspace then
             if activeRebindLabel == guiKeyLabel then guiBind = nil
@@ -445,66 +711,38 @@ UserInputService.InputBegan:Connect(function(input, gp)
             elseif activeRebindLabel == antiStunKeyLabel then antiStunBind = nil
             elseif activeRebindLabel == killAuraKeyLabel then killAuraBind = nil
             elseif activeRebindLabel == noClipKeyLabel then noClipBind = nil
+            elseif activeRebindLabel == invisKeyLabel then invisBind = nil
+            elseif activeRebindLabel == walkSpeedKeyLabel then walkSpeedBind = nil
+            elseif activeRebindLabel == flightKeyLabel then flightBind = nil
             end
             activeRebindLabel.Text = baseText .. "unbound"
         else
             local newKey = input.KeyCode
-            local keyName = newKey.Name
-
-            local conflictWithOther = false
-            if newKey == guiBind and activeRebindLabel ~= guiKeyLabel then conflictWithOther = true end
-            if newKey == dashBind and activeRebindLabel ~= dashKeyLabel then conflictWithOther = true end
-            if newKey == unbreakableBind and activeRebindLabel ~= unbreakableKeyLabel then conflictWithOther = true end
-            if newKey == antiStunBind and activeRebindLabel ~= antiStunKeyLabel then conflictWithOther = true end
-            if newKey == killAuraBind and activeRebindLabel ~= killAuraKeyLabel then conflictWithOther = true end
-            if newKey == noClipBind and activeRebindLabel ~= noClipKeyLabel then conflictWithOther = true end
-
-            if conflictWithOther then
-                if activeRebindLabel == guiKeyLabel then guiBind = nil
-                elseif activeRebindLabel == dashKeyLabel then dashBind = nil
-                elseif activeRebindLabel == unbreakableKeyLabel then unbreakableBind = nil
-                elseif activeRebindLabel == antiStunKeyLabel then antiStunBind = nil
-                elseif activeRebindLabel == killAuraKeyLabel then killAuraBind = nil
-                elseif activeRebindLabel == noClipKeyLabel then noClipBind = nil
-                end
-                activeRebindLabel.Text = baseText .. "unbound"
-                rebinding = false
-                activeRebindLabel = nil
-                return
-            end
-
             if activeRebindLabel == guiKeyLabel then guiBind = newKey
             elseif activeRebindLabel == dashKeyLabel then dashBind = newKey
             elseif activeRebindLabel == unbreakableKeyLabel then unbreakableBind = newKey
             elseif activeRebindLabel == antiStunKeyLabel then antiStunBind = newKey
             elseif activeRebindLabel == killAuraKeyLabel then killAuraBind = newKey
             elseif activeRebindLabel == noClipKeyLabel then noClipBind = newKey
+            elseif activeRebindLabel == invisKeyLabel then invisBind = newKey
+            elseif activeRebindLabel == walkSpeedKeyLabel then walkSpeedBind = newKey
+            elseif activeRebindLabel == flightKeyLabel then flightBind = newKey
             end
-            activeRebindLabel.Text = baseText .. keyName
+            activeRebindLabel.Text = baseText .. newKey.Name
         end
         rebinding = false
         activeRebindLabel = nil
         return
     end
-
-    if guiBind and input.KeyCode == guiBind then
-        gui.Enabled = not gui.Enabled
-    end
-    if dashBind and input.KeyCode == dashBind then
-        toggleDash()
-    end
-    if unbreakableBind and input.KeyCode == unbreakableBind then
-        toggleUnbreakable()
-    end
-    if antiStunBind and input.KeyCode == antiStunBind then
-        toggleAntiStun()
-    end
-    if killAuraBind and input.KeyCode == killAuraBind then
-        toggleKillAura()
-    end
-    if noClipBind and input.KeyCode == noClipBind then
-        toggleNoClip()
-    end
+    if guiBind and input.KeyCode == guiBind then gui.Enabled = not gui.Enabled end
+    if dashBind and input.KeyCode == dashBind then toggleDash() end
+    if unbreakableBind and input.KeyCode == unbreakableBind then toggleUnbreakable() end
+    if antiStunBind and input.KeyCode == antiStunBind then toggleAntiStun() end
+    if killAuraBind and input.KeyCode == killAuraBind then toggleKillAura() end
+    if noClipBind and input.KeyCode == noClipBind then toggleNoClip() end
+    if invisBind and input.KeyCode == invisBind then toggleInvis() end
+    if walkSpeedBind and input.KeyCode == walkSpeedBind then toggleWalkSpeed() end
+    if flightBind and input.KeyCode == flightBind then toggleFlight() end
 end)
 
 local dragging = false
@@ -540,6 +778,7 @@ minimizeBtn.MouseButton1Click:Connect(function()
         minimizeBtn.Text = "−"
     end
 end)
+
 closeBtn.MouseButton1Click:Connect(function()
     if dashConnection then task.cancel(dashConnection) end
     if antiStunConnection then task.cancel(antiStunConnection) end
@@ -548,5 +787,3 @@ closeBtn.MouseButton1Click:Connect(function()
     if unbreakableConnection then unbreakableConnection:Disconnect() end
     gui:Destroy()
 end)
-
-print("hunter's pvp script loaded")
